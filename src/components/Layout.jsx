@@ -120,3 +120,13 @@ function NavLink({ to, label, active }) {
     }}>{label}</Link>
   )
 }
+<div style={{ textAlign: 'center', padding: '8px', fontSize: 11, color: 'var(--text-3)' }}>
+  SignIn v2.1.1
+</div>
+```
+
+---
+
+**2. `src/pages/AttendPage.jsx`** — find the existing `SignIn v2.1.0` text at the bottom and change it to:
+```
+SignIn v2.1.1
