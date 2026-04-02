@@ -501,11 +501,15 @@ function StatCard({ label, value, sub }) {
 
 function TabBtn({ active, onClick, children }) {
   return (
-    <button onClick={onClick} style={{
-      padding: '8px 16px', borderRadius: 'var(--radius-sm)', border: 'none', cursor: 'pointer',
-      fontFamily: 'var(--font)', fontSize: 14, fontWeight: 600,
-      background: active ? 'var(--primary)' : 'var(--surface)', color: active ? '#fff' : 'var(--text-2)',
-      boxShadow: active ? 'none' : 'var(--shadow)',
-    }}>{children}</button>
+   href={attendUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="btn btn-secondary btn-sm"
+>
+  Open
+</a>
+<button onClick={copyLink} className="btn btn-primary btn-sm">
+  Copy
+</button>
   )
 }
