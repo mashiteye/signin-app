@@ -1,122 +1,63 @@
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
-import { useState } from 'react'
+import { VERSION } from '../lib/version'
 
-export default function Layout() {
+const font = "'Plus Jakarta Sans', sans-serif"
+
+export default function Layout({ children }) {
   const { profile, org, signOut } = useAuth()
-  const location = useLocation()
   const navigate = useNavigate()
-  const [menuOpen, setMenuOpen] = useState(false)
+  const loc = useLocation()
 
-  async function handleSignOut() {
-    await signOut()
-    navigate('/login')
-  }
+  const initials = profile?.full_name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '??'
+  const primary = org?.primary_color || '#0F766E'
 
-  const initials = profile?.full_name
-    ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    : '??'
+  const navItems = [
+    { label: 'Events', path: '/', icon: '📋' },
+    { label: 'Settings', path: '/settings', icon: '⚙️' },
+  ]
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      {/* Header */}
-      <header style={{
-        background: 'var(--surface)',
-        borderBottom: '1px solid var(--border)',
-        padding: '0 20px',
-        height: 56,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Link to="/" style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            textDecoration: 'none', color: 'var(--text)',
-          }}>
-            <div style={{
-              width: 30, height: 30, borderRadius: 8,
-              background: 'var(--primary)', color: '#fff',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 800, fontSize: 14,
-            }}>S</div>
-            <span style={{ fontWeight: 700, fontSize: 17 }}>SignIn</span>
-          </Link>
-
-          <nav style={{ display: 'flex', gap: 4 }}>
-            <NavLink to="/" label="Events" active={location.pathname === '/'} />
-            <NavLink to="/settings" label="Settings" active={location.pathname === '/settings'} />
-          </nav>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
-          {org && (
-            <span style={{
-              fontSize: 12, fontWeight: 600, color: 'var(--text-3)',
-              padding: '4px 10px', background: 'var(--surface-2)',
-              borderRadius: 6, border: '1px solid var(--border)',
-            }}>{org.name}</span>
+    <div style={{ fontFamily: font, minHeight: '100vh', background: '#F8FAFC' }}>
+      {/* Top bar */}
+      <div style={{ background: '#fff', borderBottom: '1px solid #E2E8F0', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {org?.logo_url ? (
+            <img src={org.logo_url} alt="" style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
+          ) : (
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: primary, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 16 }}>S</div>
           )}
-
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            style={{
-              width: 34, height: 34, borderRadius: '50%',
-              background: 'var(--primary-light)', color: 'var(--primary)',
-              fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer',
-            }}
-          >{initials}</button>
-
-          {menuOpen && (
-            <>
-              <div onClick={() => setMenuOpen(false)} style={{
-                position: 'fixed', inset: 0, zIndex: 40,
-              }} />
-              <div style={{
-                position: 'absolute', top: 44, right: 0, zIndex: 50,
-                background: 'var(--surface)', border: '1px solid var(--border)',
-                borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-md)',
-                padding: 6, minWidth: 180,
-              }}>
-                <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)', marginBottom: 4 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>{profile?.full_name}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-3)' }}>{profile?.email}</div>
-                </div>
-                <button onClick={handleSignOut} style={{
-                  width: '100%', textAlign: 'left', padding: '8px 12px',
-                  border: 'none', background: 'none', cursor: 'pointer',
-                  fontSize: 14, color: 'var(--danger)', borderRadius: 'var(--radius-sm)',
-                }}>Sign out</button>
-              </div>
-            </>
-          )}
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: '#0F172A' }}>SignIn</div>
+            <div style={{ fontSize: 11, color: '#94A3B8' }}>{org?.name || 'Organization'}</div>
+          </div>
         </div>
-      </header>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {navItems.map(n => (
+              <button key={n.path} onClick={() => navigate(n.path)} style={{
+                border: 'none', background: loc.pathname === n.path ? '#F1F5F9' : 'transparent',
+                padding: '8px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 14,
+                fontWeight: loc.pathname === n.path ? 600 : 400, color: '#334155', fontFamily: font,
+              }}>{n.icon} {n.label}</button>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: primary, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{initials}</div>
+            <button onClick={signOut} style={{ border: 'none', background: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: 13, fontFamily: font }}>Sign out</button>
+          </div>
+        </div>
+      </div>
 
-      {/* Main content */}
-      <main style={{ padding: '24px 20px', maxWidth: 1100, margin: '0 auto' }}>
-        <Outlet />
-      </main>
+      {/* Content */}
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
+        {children}
+      </div>
 
       {/* Footer */}
-      <footer style={{
-        textAlign: 'center', padding: '20px',
-        fontSize: 12, color: 'var(--text-3)',
-      }}>SignIn v2.1.1</footer>
+      <div style={{ textAlign: 'center', padding: '16px', fontSize: 11, color: '#CBD5E1' }}>
+        SignIn v{VERSION}
+      </div>
     </div>
-  )
-}
-
-function NavLink({ to, label, active }) {
-  return (
-    <Link to={to} style={{
-      padding: '6px 14px', borderRadius: 'var(--radius-sm)',
-      fontSize: 14, fontWeight: 500, textDecoration: 'none',
-      color: active ? 'var(--primary)' : 'var(--text-2)',
-      background: active ? 'var(--primary-50)' : 'transparent',
-    }}>{label}</Link>
   )
 }
