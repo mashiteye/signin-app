@@ -4,64 +4,59 @@ Standalone web app for capturing event attendance and digital signatures. Built 
 
 ## Stack
 
-- **Frontend:** React + Vite
+- **Frontend:** React 18 + Vite 5
 - **Backend:** Supabase (auth, database, storage)
 - **Hosting:** Vercel (free tier)
 
-## Setup
+## Setup (4 steps)
 
-### 1. Supabase
+### 1. Supabase — Run the schema
 
-Project: `wryevlgmsrzlzzypnkaf` (eu-west-1).
+Go to Supabase Dashboard > SQL Editor > New query. Paste the entire contents of `supabase/complete-schema.sql` and click Run. This creates all tables, RLS policies, and the signatures storage bucket in one shot.
 
-Run `supabase/schema-update.sql` in the SQL Editor to add the `event_code` column and public RLS policies needed for the tablet attendance page.
-
-Then configure:
-- **Authentication > Email Auth:** Enable email/password sign-ups
-- **Authentication > URL Configuration:** Add your Vercel domain to Redirect URLs
-- **Storage > signatures bucket:** Make public (add SELECT and INSERT policies for anon)
+Then configure auth:
+- Authentication > Providers > Email: ensure it's enabled
+- Authentication > URL Configuration > Redirect URLs: add your Vercel domain
 
 ### 2. Environment variables
 
-Copy `.env.example` to `.env`:
+Copy `.env.example` to `.env` and fill in your anon key:
 
 ```
 VITE_SUPABASE_URL=https://wryevlgmsrzlzzypnkaf.supabase.co
 VITE_SUPABASE_ANON_KEY=<your-anon-key>
 ```
 
-Find anon key at: Supabase Dashboard > Settings > API > anon/public key.
+Find the anon key at: Supabase Dashboard > Settings > API > anon/public key.
 
-### 3. Local dev
+### 3. Deploy to Vercel
 
-```bash
-npm install
-npm run dev
-```
+Connect your GitHub repo at vercel.com. Add the two environment variables above in Project Settings > Environment Variables.
 
-### 4. Deploy to Vercel
+The `vercel.json` file handles SPA routing so deep links like `/attend/xxx` work correctly.
 
-Connect your GitHub repo at vercel.com > New Project > Import `signin-app`. Add environment variables in Settings > Environment Variables.
+### 4. Test
 
-## Routes
+1. Sign up with email + password
+2. Create an event
+3. Add participants (manual or CSV)
+4. Open the attendance link on a tablet in incognito
 
-| Route | Auth | Purpose |
-|---|---|---|
-| `/login` | Public | Sign in |
-| `/signup` | Public | Create account + org |
-| `/` | Protected | Dashboard (event list) |
-| `/events/new` | Protected | Create event |
-| `/events/:id` | Protected | Event detail + participants |
-| `/attend/:code` | Public | Tablet attendance page |
-
-## CSV format
+### CSV format
 
 ```
 Name,Organization,Email,Position,Sex,Program
+John Doe,ACME Corp,john@acme.org,Manager,Male,Project Alpha
 ```
 
-Only `Name` is required.
+Only the `Name` column is required.
+
+## Troubleshooting
+
+**"Event not found" on attend page:** Usually means Supabase free tier has paused the project. Open the Supabase dashboard to wake it up, then refresh.
+
+**Slow first load:** Free tier cold start takes 5-10 seconds. Pre-load tablets before events.
 
 ## Version
 
-v2.0.0
+v2.2.0
