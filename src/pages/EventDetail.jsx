@@ -114,7 +114,6 @@ export default function EventDetail() {
     }).eq('id', editId)
     if (error) { setEditError(error.message); setEditSaving(false); return }
 
-    // Audit log
     await supabase.from('audit_log').insert({
       org_id: org.id, event_id: id, action: 'participant_edited',
       actor_id: user.id, details: { participant_id: editId, changes: editData },
@@ -322,6 +321,7 @@ export default function EventDetail() {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <code style={{ flex: 1, padding: '8px 12px', background: 'var(--surface)', borderRadius: 'var(--radius-sm)', fontSize: 13, border: '1px solid var(--border)', wordBreak: 'break-all' }}>{attendLink}</code>
+          <a href={attendLink} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-sm">Open</a>
           <button className="btn btn-primary btn-sm" onClick={copyLink}>{linkCopied ? '✓ Copied' : 'Copy'}</button>
         </div>
       </div>
@@ -501,15 +501,8 @@ function StatCard({ label, value, sub }) {
 
 function TabBtn({ active, onClick, children }) {
   return (
-   href={attendUrl}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="btn btn-secondary btn-sm"
->
-  Open
-</a>
-<button onClick={copyLink} className="btn btn-primary btn-sm">
-  Copy
-</button>
+    <button onClick={onClick} className={`btn btn-sm ${active ? 'btn-primary' : 'btn-secondary'}`}>
+      {children}
+    </button>
   )
 }
