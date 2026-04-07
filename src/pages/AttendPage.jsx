@@ -520,7 +520,7 @@ export default function AttendPage() {
         </div>
       )}
 
-      <div style={{ textAlign: 'center', padding: 14, fontSize: 11, color: '#94A3B8' }}>SignIn v2.1.0</div>
+      <div style={{ textAlign: 'center', padding: 14, fontSize: 11, color: '#94A3B8' }}>SignIn v2.1.1</div>
     </div>
   )
 }
