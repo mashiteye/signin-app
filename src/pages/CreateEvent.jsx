@@ -101,3 +101,13 @@ export default function CreateEvent() {
     </div>
   )
 }
+{
+  org_id: profile.org_id,
+  name: eventName,          // required by your DB
+  event_name: eventName,    // compatibility
+  description,
+  start_date: startDate,
+  end_date: endDate,
+  days: Number(numberOfDays || 1),
+  status: 'active'
+}
